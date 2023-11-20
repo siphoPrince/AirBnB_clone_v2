@@ -9,24 +9,18 @@ class FileStorage:
     __objects = {}
 
     def all(self, cls=None):
-        """
-        Returns a dictionary or a list of objects of one type of class (optional filtering).
-
-        Args:
-            cls (type or None): The class type to filter objects.
-
-        Returns:
-            dict or list: If cls is None, returns a dictionary of all objects.
-                          If cls is provided, returns a list of objects of that class.
-        """
-        if cls is None:
-            return FileStorage.__objects
+        """Returns a dictionary or a filtered dictionary of models currently in storage"""
+        if cls is not None:
+            return {key: obj for key, obj in FileStorage.__objects.items() if isinstance(obj, cls)}
         else:
-            filtered_objects = {}
-            for key, obj in FileStorage.__objects.items():
-                if isinstance(obj, cls):
-                    filtered_objects[key] = obj
-            return filtered_objects
+            return FileStorage.__objects
+
+    def delete(self, obj=None):
+        """Deletes the given object from __objects if it exists."""
+        if obj is not None:
+            key = "{}.{}".format(obj.__class__.__name__, obj.id)
+            if key in FileStorage.__objects:
+                del FileStorage.__objects[key]
 
     def new(self, obj):
         """Adds new object to storage dictionary"""
@@ -40,13 +34,6 @@ class FileStorage:
             for key, val in temp.items():
                 temp[key] = val.to_dict()
             json.dump(temp, f)
-
-    def delete(self, obj=None):
-        """Removes an object from __objects if it exists."""
-        if obj is not None:
-            key = "{}.{}".format(obj.__class__.__name__, obj.id)
-            if key in FileStorage.__objects:
-                del FileStorage.__objects[key]
 
     def reload(self):
         """Loads storage dictionary from file"""
