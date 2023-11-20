@@ -21,3 +21,7 @@ class State(BaseModel, Base):
             if instance.state_id == self.id:
                 C_list.append(instance)
         return C_list
+
+    def __str__(self):
+        """String representation of the State object."""
+        return "[State] ({}) {}".format(self.id, self.__dict__)
