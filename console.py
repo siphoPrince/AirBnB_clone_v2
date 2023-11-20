@@ -123,6 +123,7 @@ class HBNBCommand(cmd.Cmd):
         elif classname not in HBNBCommand.classes:
             print("** class doesn't exist **")
             return
+        new_dict = {}
         keywords = user_input[1:]
         for keyword in keywords:
             word = keyword.split("=")
@@ -138,12 +139,10 @@ class HBNBCommand(cmd.Cmd):
                         value = float(value)
                     except Exception:
                         continue
-        
-            new_dict = {}
             new_dict[key] = value
         new_instance = HBNBCommand.classes[classname](**new_dict)
         print(new_instance.id)
-        storage.save()
+        new_instance.save()
 
     def help_create(self):
         """ Help information for the create method """
