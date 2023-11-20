@@ -12,7 +12,7 @@ class State(BaseModel, Base):
     name = Column(String(128), nullable=False)
     cities = relationship("City",backref="state")
 
-    @properties
+    @property
     def cities(self):
         """returns the list of City instances """
         C_list = []
