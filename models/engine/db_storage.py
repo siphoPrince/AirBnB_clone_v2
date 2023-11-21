@@ -18,7 +18,7 @@ class DBStorage:
     __engine = None
     __session = None
 
-    classes =["State", "City", "User", "Place", "Review"]
+    classes = [State, City, User, Place, Review]
 
     def __init__(self):
         """Init method"""
@@ -32,26 +32,24 @@ class DBStorage:
         if HBNB_ENV == 'test':
             Box.metadata.dp_all(self.__engine)
 
-    def all(self, cls=None):
-        """return dictionary"""
-        dict_db = {}
-
-        if cls == None:
-            for clas in self.classes:
-                #clas = eval(clas)
-                query = self.__session.query(clas).all()
-                print(query)
-                for instance in query:
-                    key = instance.__class__.__name__ + '.' + instance.id
-                    dict_db[key] = instance
+    def all(self,cls=None):
+        """query on the current database session (self.__session)
+        all objects depending of the class name"""
+        db = {}
+        if cls is not None:
+            q = self.__session.query(cls).all()
+            for i in q:
+                key = i.__class__.__name__ + '.' + i.id
+                db[key] = i
         else:
-            query = self.__session.query(cls).all()
-            for instance in query:
-                key = instance.__class__.__name__ + '.' + instance.id
-                dict_db[key] = instance
-        
-        return dict_db
-
+            for clas in DBStorage.classes:
+                q = self.__session.query(clas).all()
+                for ins in q:
+                    clas_nam = ins.__class__.__name__ 
+                    key = clas_nam + '.' + ins.id
+                    db[key] = ins
+        return db
+    
     def new(self, obj):
         """add the object to the current database session"""
         self.__session.add(obj)
