@@ -43,27 +43,3 @@ class Place(BaseModel, Base):
         """init for place"""
         super().__init__(*args, **kwargs)
 
-    if models.HBNB_TYPE_STORAGE != "db":
-        @property
-        def reviews(self):
-            """ returns the list of Review instances with
-            place_id equals to the current Place.id"""
-            review_list = []
-            review_instances = storage.all(Amenity)
-            for i in review_instances.values():
-                if i.amenity.id == self.id:
-                    review_list.append(i)
-            return review_list
-        @property
-        def amenities(self):
-            """getter"""
-            list_amenity = []
-            amenity_ins = models.storage.all(Amenity)
-            for i in amenity_ins.values():
-                if i.id in self.amenity_ids:
-                    list_amenity.append(i)
-            return list_amenity
-        @amenities.setter
-        def amenities(self, value):
-            if type(value) == Amenity:
-                self.amenity_ids.append(value.id)
