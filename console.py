@@ -125,6 +125,7 @@ class HBNBCommand(cmd.Cmd):
             return
         new_dict = {}
         keywords = user_input[1:]
+
         for keyword in keywords:
             word = keyword.split("=")
             key = word[0]
@@ -139,10 +140,11 @@ class HBNBCommand(cmd.Cmd):
                         value = float(value)
                     except Exception:
                         continue
-            new_dict[key] = value
+                    new_dict[key] = value
+
         new_instance = HBNBCommand.classes[classname](**new_dict)
-        print(new_instance.id)
         new_instance.save()
+
 
     def help_create(self):
         """ Help information for the create method """

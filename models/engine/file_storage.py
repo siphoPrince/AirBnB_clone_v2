@@ -56,10 +56,11 @@ class FileStorage:
                     'Review': Review
                   }
         try:
-            temp = {}
             with open(FileStorage.__file_path, 'r') as f:
                 temp = json.load(f)
                 for key, val in temp.items():
-                        self.all()[key] = classes[val['__class__']](**val)
+                    cls_name, obj_id = key.split('.')
+                    cls = BaseModel
+                    self.__objects[key] = cls(**val)
         except FileNotFoundError:
             pass
