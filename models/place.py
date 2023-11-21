@@ -36,17 +36,32 @@ class Place(BaseModel, Base):
     longitude = Column(Float, nullable=True)
     amenity_ids = []
     reviews = relationship("Review", backref="place", cascade="all, delete-orphan")  
-    #amenities = relationship("Amenity", secondary="place_amenity", viewonly='plave_amenity')
+    amenities = relationship("Amenity", secondary="place_amenity", viewonly='plave_amenity')
 
-
-    @property
-    def reviews(self):
-        """Getter attribute that returns the list of Review instances
-        with place_id equal to the current Place.id"""
-        all_reviews = models.storage.all(models.Review)
-        return [review for review in all_reviews.values() if review.place_id == self.id]
 
     def __init__(self, *args, **kwargs):
         """init for place"""
         super().__init__(*args, **kwargs)
+    
+    if models.HBNB_TYPE_STORAGE != "db":
+
+        @property
+         def reviews(self):
+            """Getter attribute that returns the list of Review instances
+            with place_id equal to the current Place.id"""
+            all_reviews = models.storage.all(models.Review)
+            return [review for review in all_reviews.values() if review.place_id == self.id]
+        @property
+            def amenities(self):
+                """getter"""
+                list_amenity = []
+                amenity_ins = models.storage.all(Amenity)
+                for i in amenity_ins.values():
+                    if i.id in self.amenity_ids:
+                        list_amenity.append(i)
+                return list_amenity
+        @amenities.setter
+            def amenities(self, value):
+                if type(value) == Amenity:
+                    self.amenity_ids.append(value.id)
 
