@@ -35,9 +35,16 @@ class Place(BaseModel, Base):
     latitude = Column(Float, nullable=True)
     longitude = Column(Float, nullable=True)
     amenity_ids = []
-    #reviews = relationship("Review", backref="place", cascade="delete")
+    reviews = relationship("Review", backref="place", cascade="all, delete-orphan")  
     #amenities = relationship("Amenity", secondary="place_amenity", viewonly='plave_amenity')
 
+
+    @property
+    def reviews(self):
+        """Getter attribute that returns the list of Review instances
+        with place_id equal to the current Place.id"""
+        all_reviews = models.storage.all(models.Review)
+        return [review for review in all_reviews.values() if review.place_id == self.id]
 
     def __init__(self, *args, **kwargs):
         """init for place"""
