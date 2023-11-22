@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 """ State Module for HBNB project """
+<<<<<<< HEAD
 from models.base_model import BaseModel, Base
 import models
 from sqlalchemy import Column, String
@@ -14,3 +15,10 @@ class Amenity(BaseModel, Base):
     def __init__(self, *args, **kwargs):
         """init inherited"""
         super().__init__(*args, **kwargs)
+=======
+from models.base_model import BaseModel
+
+
+class Amenity(BaseModel):
+    name = ""
+>>>>>>> 152aebe44248f30bd531e778528fc26a7912fd85
