@@ -18,7 +18,6 @@ class DBStorage:
     __engine = None
     __session = None
 
-    classes = [State, City, User, Place, Review]
 
     def __init__(self):
         """Init method"""
@@ -35,18 +34,19 @@ class DBStorage:
     def all(self,cls=None):
         """query on the current database session (self.__session)
         all objects depending of the class name"""
+        classes = [State, City, User, Place, Review]
         db = {}
         if cls is not None:
             q = self.__session.query(cls).all()
             for i in q:
-                key = i.__class__.__name__ + '.' + i.id
+                key = i.__class__.__name__ + '.' + str(i.id)
                 db[key] = i
         else:
-            for clas in DBStorage.classes:
+            for clas in classes:
                 q = self.__session.query(clas).all()
                 for ins in q:
                     clas_nam = ins.__class__.__name__ 
-                    key = clas_nam + '.' + ins.id
+                    key = clas_nam + '.' + str(ins.id)
                     db[key] = ins
         return db
     
