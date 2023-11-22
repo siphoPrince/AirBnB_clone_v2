@@ -13,7 +13,6 @@ class Amenity(BaseModel, Base):
     name = Column(String(128), nullable=False)
     place_amenities = relationship("Place", secondary="place_amenity", back_populates="amenities")
 
-
-def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         """init inherited"""
         super().__init__(*args, **kwargs)

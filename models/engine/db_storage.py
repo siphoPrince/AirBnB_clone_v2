@@ -30,7 +30,7 @@ class DBStorage:
         
         self.__engine = create_engine((f'mysql+mysqldb://{HBNB_MYSQL_USER}:{HBNB_MYSQL_PWD}@{HBNB_MYSQL_HOST}/{HBNB_MYSQL_DB}'), pool_pre_ping = True)
         if HBNB_ENV == 'test':
-            Box.metadata.dp_all(self.__engine)
+            Base.metadata.create_all(self.__engine)
 
     def all(self,cls=None):
         """query on the current database session (self.__session)
