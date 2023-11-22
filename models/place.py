@@ -11,15 +11,17 @@ import models
 from models.review import Review
 from models.amenity import Amenity
 
-a_table = Table('place_amenity', Base.metadata,
-                Column('place_id', Integer, ForeignKey('places.id'), primary_key=True, nullable=False),
-                Column('amenity_id', String(60), ForeignKey('amenities.id'), primary_key=True, nullable=False))
-
+a_table = Table(
+    'place_amenity',
+    Base.metadata,
+    Column('place_id', String(60), ForeignKey('places.id'), primary_key=True, nullable=False),
+    Column('amenity_id', String(60), ForeignKey('amenities.id'), primary_key=True, nullable=False)
+)
 
 class Place(BaseModel, Base):
     """ A place to stay """
     __tablename__ = 'places'
-    id = Column(String(36), primary_key=True, nullable=False, unique=True)
+    id = Column(String(60), primary_key=True, nullable=False, unique=True)
     city_id = Column(String(60), ForeignKey('cities.id'), nullable=False)
     user_id = Column(String(60), ForeignKey('users.id'), nullable=False)
     name = Column(String(128), nullable=False)
@@ -33,6 +35,7 @@ class Place(BaseModel, Base):
     reviews = relationship("Review", backref="place", cascade="all, delete-orphan")
     amenities = relationship("Amenity", secondary="place_amenity", back_populates="places")
 
+    amenity_ids = []
 
     def __init__(self, *args, **kwargs):
         """init for place"""
@@ -59,7 +62,7 @@ class Place(BaseModel, Base):
 
         @amenities.setter
         def amenities(self, value):
-            if type(value) == Amenity:
+            if isinstance(value, Amenity):
                 self.amenity_ids.append(value.id)
                 print("Added Amenity with ID {} to Place with ID {}".format(value.id, self.id))
 
@@ -72,3 +75,4 @@ class Place(BaseModel, Base):
         def place_amenities(cls):
             """Expression for using the property in queries."""
             return cls.amenities.any()
+
