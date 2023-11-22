@@ -8,5 +8,5 @@ from sqlalchemy.orm import relationship
 class User(BaseModel, Base):
     """Class definition for User"""
     __tablename__ = "users"
-    id = Column(String(160), primary_key=True, nullable=False)
+    id = Column(String(36), primary_key=True, nullable=False)
     reviews = relationship("Review", backref="user", cascade="all, delete-orphan")
