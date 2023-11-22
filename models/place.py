@@ -32,7 +32,7 @@ class Place(BaseModel, Base):
     longitude = Column(Float, nullable=True)
     amenity_ids = []
     reviews = relationship("Review", backref="place", cascade="all, delete-orphan")
-    amenities = relationship("Amenity", secondary="place_amenity", back_populates="places")
+    amenities = relationship("Amenity", secondary="place_amenity", viewonly=False, backref="places")
 
 
     def __init__(self, *args, **kwargs):
@@ -54,7 +54,7 @@ class Place(BaseModel, Base):
             for i in amenity_ins.values():
                 if i.id in self.amenity_ids:
                     list_amenity.append(i)
-                    return list_amenity
+            return list_amenity
         @amenities.setter
         def amenities(self, value):
             if type(value) == Amenity:

@@ -11,7 +11,7 @@ class Amenity(BaseModel, Base):
     __tablename__ = 'amenities'
     id = Column(Integer, primary_key=True)
     name = Column(String(128), nullable=False)
-    places = relationship("Place", secondary="place_amenity", back_populates="amenities")
+    place_amenities = relationship("Place", secondary="place_amenity", back_populates="amenities")
 
 
 def __init__(self, *args, **kwargs):
