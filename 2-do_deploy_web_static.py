@@ -1,37 +1,54 @@
-#!/usr/bin/env bash
-# Script that sets up web servers for the deployment of web_static
+#!/usr/bin/python3
+"""
+Fabric script based on the file 1-pack_web_static.py that distributes an
+archive to the web servers
+"""
 
-# Update package list
-sudo apt-get update
+from fabric.api import put, run, env
+from os.path import exists
 
-# Install Nginx
-sudo apt-get -y install nginx
+env.hosts = ['54.89.109.87', '100.25.190.21']
 
-# Allow HTTP traffic through UFW
-sudo ufw allow 'Nginx HTTP'
 
-# Create directory structure for web_static
-sudo mkdir -p /data/web_static/{releases/test,shared,current}
+def do_deploy(archive_path):
+    """
+    Distributes an archive to the web servers
+    """
+    # Check if the archive exists
+    if not exists(archive_path):
+        return False
+    
+    try:
+        # Extract necessary information from the archive path
+        file_name = archive_path.split("/")[-1]
+        no_extension = file_name.split(".")[0]
+        path = "/data/web_static/releases/"
 
-# Create index.html in test release
-sudo tee /data/web_static/releases/test/index.html > /dev/null <<EOL
-<html>
-  <head>
-  </head>
-  <body>
-    Holberton School
-  </body>
-</html>
-EOL
+        # Upload the archive to /tmp/
+        put(archive_path, '/tmp/')
 
-# Create symbolic link to the test release
-sudo ln -s -f /data/web_static/releases/test/ /data/web_static/current
+        # Create the release directory
+        run('mkdir -p {}{}/'.format(path, no_extension))
 
-# Set ownership to the ubuntu user
-sudo chown -R ubuntu:ubuntu /data/
+        # Extract the contents of the archive
+        run('tar -xzf /tmp/{} -C {}{}/'.format(file_name, path, no_extension))
 
-# Add alias to Nginx configuration
-sudo sed -i '/listen 80 default_server/a location /hbnb_static { alias /data/web_static/current/;}' /etc/nginx/sites-enabled/default
+        # Remove the uploaded archive
+        run('rm /tmp/{}'.format(file_name))
 
-# Restart Nginx
-sudo service nginx restart
+        # Move the contents to the release directory
+        run('mv {0}{1}/web_static/* {0}{1}/'.format(path, no_extension))
+
+        # Remove the web_static directory
+        run('rm -rf {}{}/web_static'.format(path, no_extension))
+
+        # Remove the current symbolic link
+        run('rm -rf /data/web_static/current')
+
+        # Create a new symbolic link
+        run('ln -s {}{}/ /data/web_static/current'.format(path, no_extension))
+
+        return True
+    except Exception as e:
+        print(e)
+        return False
