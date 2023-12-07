@@ -7,6 +7,7 @@ execute: fab -f 1-pack_web_static.py do_pack
 from datetime import datetime
 from fabric.api import local, task
 
+
 @task
 def do_pack():
     """
@@ -17,4 +18,3 @@ def do_pack():
     local("mkdir -p versions")
     result = local(f"tar -cvzf versions/{archive} web_static")
     return archive if result.succeeded else None
-
