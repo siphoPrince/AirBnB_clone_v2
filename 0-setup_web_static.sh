@@ -1,37 +1,27 @@
 #!/usr/bin/env bash
-# Script that sets up web servers for the deployment of web_static
-
-# Update package list
+# script that sets up web servers for the deployment of web_static
 sudo apt-get update
-
-# Install Nginx
 sudo apt-get -y install nginx
-
-# Allow HTTP traffic through UFW
 sudo ufw allow 'Nginx HTTP'
 
-# Create directory structure for web_static
-sudo mkdir -p /data/web_static/{releases/test,shared,current}
-
-# Create index.html in test release
-sudo tee /data/web_static/releases/test/index.html > /dev/null <<EOL
-<html>
+sudo mkdir -p /data/
+sudo mkdir -p /data/web_static/
+sudo mkdir -p /data/web_static/releases/
+sudo mkdir -p /data/web_static/shared/
+sudo mkdir -p /data/web_static/releases/test/
+sudo touch /data/web_static/releases/test/index.html
+sudo echo "<html>
   <head>
   </head>
   <body>
     Holberton School
   </body>
-</html>
-EOL
+</html>" | sudo tee /data/web_static/releases/test/index.html
 
-# Create symbolic link to the test release
 sudo ln -s -f /data/web_static/releases/test/ /data/web_static/current
 
-# Set ownership to the ubuntu user
 sudo chown -R ubuntu:ubuntu /data/
 
-# Add alias to Nginx configuration
 sudo sed -i '/listen 80 default_server/a location /hbnb_static { alias /data/web_static/current/;}' /etc/nginx/sites-enabled/default
 
-# Restart Nginx
 sudo service nginx restart
