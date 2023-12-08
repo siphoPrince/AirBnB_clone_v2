@@ -1,54 +1,63 @@
 #!/usr/bin/python3
 """
-Fabric script based on the file 1-pack_web_static.py that distributes an
-archive to the web servers
+Fabric script that distributes an archive to your web servers
 """
 
-from fabric.api import put, run, env
-from os.path import exists
 
+from fabric.api import env, put, run, local
+from os.path import exists
+from datetime import datetime
+
+# Define the user and hosts
+env.user = 'ubuntu'
 env.hosts = ['54.84.61.41', '54.197.43.33']
 
+def do_pack():
+    """
+    Generates a .tgz archive from the contents of the web_static folder
+    """
+    try:
+        local("mkdir -p versions")
+        current_time = datetime.now().strftime("%Y%m%d%H%M%S")
+        file_path = "versions/web_static_{}.tgz".format(current_time)
+        local("tar -czvf {} web_static".format(file_path))  # Use -czvf for consistency
+        return file_path
+    except Exception as e:
+        return None
 
 def do_deploy(archive_path):
     """
-    Distributes an archive to the web servers
+    Deploys the archive to the web servers
     """
-    # Check if the archive exists
     if not exists(archive_path):
         return False
-    
+
     try:
-        # Extract necessary information from the archive path
-        file_name = archive_path.split("/")[-1]
-        no_extension = file_name.split(".")[0]
-        path = "/data/web_static/releases/"
-
         # Upload the archive to /tmp/
-        put(archive_path, '/tmp/')
+        put(archive_path, "/tmp/")
 
-        # Create the release directory
-        run('mkdir -p {}{}/'.format(path, no_extension))
+        # Extract the archive to /data/web_static/releases/
+        file_name = archive_path.split('/')[-1].split('.')[0]
+        run("mkdir -p /data/web_static/releases/{}/".format(file_name))
+        run("tar -xzf /tmp/{} -C /data/web_static/releases/{}/".format(file_name + ".tgz", file_name))
 
-        # Extract the contents of the archive
-        run('tar -xzf /tmp/{} -C {}{}/'.format(file_name, path, no_extension))
+        # Delete the archive from the server
+        run("rm /tmp/{}".format(file_name + ".tgz"))
 
-        # Remove the uploaded archive
-        run('rm /tmp/{}'.format(file_name))
+        # Move contents to the web_static folder
+        run("mv /data/web_static/releases/{}/web_static/* /data/web_static/releases/{}/".format(file_name, file_name))
 
-        # Move the contents to the release directory
-        run('mv {0}{1}/web_static/* {0}{1}/'.format(path, no_extension))
+        # Delete the unnecessary web_static folder
+        run("rm -rf /data/web_static/releases/{}/web_static".format(file_name))
 
-        # Remove the web_static directory
-        run('rm -rf {}{}/web_static'.format(path, no_extension))
-
-        # Remove the current symbolic link
-        run('rm -rf /data/web_static/current')
+        # Delete the symbolic link /data/web_static/current
+        run("rm -rf /data/web_static/current")
 
         # Create a new symbolic link
-        run('ln -s {}{}/ /data/web_static/current'.format(path, no_extension))
+        run("ln -s /data/web_static/releases/{}/ /data/web_static/current".format(file_name))
 
+        print("New version deployed!")
         return True
+
     except Exception as e:
-        print(e)
         return False
