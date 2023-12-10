@@ -1,11 +1,7 @@
 #!/usr/bin/python3
-"""
-Fabric script based on the file 1-pack_web_static.py that distributes an
-archive to the web servers
-"""
-
-from fabric.api import put, run, env
+from fabric.api import *
 from os.path import exists
+<<<<<<< HEAD
 env.hosts = ['54.84.61.41', '54.197.43.33']
 
 
@@ -28,3 +24,50 @@ def do_deploy(archive_path):
         return True
     except:
         return False
+=======
+from datetime import datetime
+from fabric.api import local
+
+env.hosts = ['54.84.61.41', '54.197.43.33']
+
+
+def do_pack():
+    '''
+    Fabric script that generates a the web_static
+    '''
+    try:
+        filepath = 'versions/web_static_' + datetime.now().\
+                   strftime('%Y%m%d%H%M%S') + '.tgz'
+        local('mkdir -p versions')
+        local('tar -zcvf versions/web_static_$(date +%Y%m%d%H%M%S).tgz\
+        web_static')
+        print('web_static packed: {} -> {}'.
+              format(filepath, os.path.getsize(filepath)))
+    except:
+        return None
+
+
+def do_deploy(archive_path):
+        """
+        Depploy server
+    """
+        if exists(archive_path) is False:
+            return False
+        file_name = archive_path.split('/')[1]
+        file_path = '/data/web_static/releases'
+        try:
+            put(archive_path, '/tmp/')
+            run('mkdir -p {}{}'.format(file_path, file_name[:-4]))
+            run('tar -xzf /tmp/{} -C {}{}/'.format(file_name,
+                                                   file_path, file_name[:-4]))
+            run('rm /tmp/{}'.format(file_name))
+            run('mv {}{}/web_static/* {}{}/'.format(file_path, file_name[:-4],
+                                                    file_path, file_name[:-4]))
+            run('rm -rf {}{}/web_static'.format(file_path, file_name[:-4]))
+            run('rm -rf /data/web_static/current')
+            run('ln -s {}{}/ /data/web_static/current'.format(file_path,
+                                                              file_name[:-4]))
+            return True
+        except:
+            return False
+>>>>>>> d3306c69906a3f2196718564b4fc8af84232c8eb
