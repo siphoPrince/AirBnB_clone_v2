@@ -25,10 +25,11 @@ def display_c_text(text):
     return 'C {}'.format(text)
 
 
-@app.route('/python/<text>', strict_slashes=False)
-def display_python_text(text='is cool'):
-    """ Replace underscore symbols with a space"""
-    text = escape(text).replace('_', ' ')
+app.route('/python/')
+@app.route('/python/<text>')
+def python_text(text='is cool'):
+    """ replace more text with another variable. """
+    text = text.replace('_', ' ')
     return 'Python {}'.format(text)
 
 
