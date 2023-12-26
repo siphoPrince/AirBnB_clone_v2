@@ -12,8 +12,12 @@ class Review(BaseModel, Base):
     __tablename__ = 'reviews'
     place_id = Column(String(60), ForeignKey("places.id"), nullable=False)
     user_id = Column(String(60), ForeignKey("users.id"), nullable=False)
+<<<<<<< HEAD
     text = Column(String(1024), nullable=False)
 
     def __init__(self, *args, **kwargs):
         """initialization for review"""
         super().__init__(*args, **kwargs)
+=======
+    text = Column(Text(1024), nullable=False)
+>>>>>>> 60144fb6785a88c1c4fe89bfce74db1db5f0303f
