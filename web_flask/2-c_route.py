@@ -1,4 +1,5 @@
-#!/usr/bin/env python3
+#!/usr/bin/python3
+""" file for removing empty"""
 
 from flask import Flask, escape
 
@@ -7,17 +8,19 @@ app = Flask(__name__)
 
 @app.route('/', strict_slashes=False)
 def hello_hbnb():
+    """print hello """
     return 'Hello HBNB!'
 
 
 @app.route('/hbnb', strict_slashes=False)
 def display_hbnb():
+    """ print hbnb"""
     return 'HBNB'
 
 
 @app.route('/c/<text>', strict_slashes=False)
 def display_c_text(text):
-    # Replace underscore symbols with a space
+    """ Replace underscore symbols with a space"""
     text = escape(text).replace('_', ' ')
     return 'C {}'.format(text)
 
