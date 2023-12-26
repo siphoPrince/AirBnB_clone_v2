@@ -1,14 +1,16 @@
-#!/usr/bin/env python3
-
+#!/usr/bin/python3
 from flask import Flask
-
 app = Flask(__name__)
 
 
-@app.route('/', strict_slashes=False)
-def hello_hbnb():
+@app.route('/')
+def hello():
+    '''
+    Hello Flask route
+    '''
     return 'Hello HBNB!'
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    app.run()
+    app.url_map.strict_slashes = False
