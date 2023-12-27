@@ -40,7 +40,6 @@ class Place(BaseModel, Base):
     price_by_night = Column(Integer, nullable=False, default=0)
     latitude = Column(Float, nullable=True)
     longitude = Column(Float, nullable=True)
-<<<<<<< HEAD
     amenity_ids = []
     reviews = relationship("Review", backref="place", cascade="delete")
     amenities = relationship("Amenity", secondary="place_amenity", viewonly='plave_amenity')
@@ -65,7 +64,7 @@ class Place(BaseModel, Base):
                 if i.id in self.amenity_ids:
                     list_amenity.append(i)
             return list_amenity
-=======
+
     reviews = relationship('Review', cascade="all,delete", backref="place")
     amenities = relationship("Amenity", secondary="place_amenity", viewonly='plave_amenity')
 
@@ -92,7 +91,6 @@ class Place(BaseModel, Base):
                     list_amenity.append(i)
             return list_amenity
 
->>>>>>> 60144fb6785a88c1c4fe89bfce74db1db5f0303f
         @amenities.setter
         def amenities(self, value):
             if type(value) == Amenity:
