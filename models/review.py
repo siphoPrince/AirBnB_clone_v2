@@ -17,4 +17,4 @@ class Review(BaseModel, Base):
     def __init__(self, *args, **kwargs):
         """initialization for review"""
         super().__init__(*args, **kwargs)
-    text = Column(Text(1024), nullable=False)
+        text = Column(Text(1024), nullable=False)
