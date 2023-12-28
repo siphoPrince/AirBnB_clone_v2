@@ -6,7 +6,7 @@ import sqlalchemy
 from models.city import City
 from sqlalchemy import Column, String, ForeignKey
 from sqlalchemy.orm import relationship
-from models import storage
+
 
 class State(BaseModel, Base):
     """ State class """
@@ -20,6 +20,8 @@ class State(BaseModel, Base):
         @property
         def cities(self):
             """ getter """
+            from models import storage
+
             city_list = []
             city_instances = storage.all(City)
             for i in city_instances.values():
