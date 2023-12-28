@@ -9,7 +9,7 @@ class FileStorage:
     __objects = {}
 
     def all(self, cls=None):
-        """Returns a dictionary or a filtered dictionary of models currently in storage"""
+        """Returns a filtered dictionary of models currently in storage"""
         f_obj = {}
         if cls is not None:
             for key, obj in FileStorage.__objects.items():
@@ -40,7 +40,6 @@ class FileStorage:
             for key, val in temp.items():
                 temp[key] = val.to_dict()
             json.dump(temp, f)
-
 
     def reload(self):
         """Loads storage dictionary from file"""
