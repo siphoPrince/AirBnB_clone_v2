@@ -9,6 +9,7 @@ from os import getenv
 import models
 from models.review import Review
 from models.amenity import Amenity
+from models.city import City
 
 place_amenity = Table('place_amenity', Base.metadata,
                 Column('place_id', String(60),
@@ -21,6 +22,7 @@ place_amenity = Table('place_amenity', Base.metadata,
 class Place(BaseModel, Base):
     """ A place to stay """
     __tablename__ = 'places'
+    id = Column(String(60), primary_key=True)
     city_id = Column(String(60), ForeignKey('cities.id'), nullable=False)
     user_id = Column(String(60), ForeignKey('users.id'), nullable=False)
     name = Column(String(128), nullable=False)
@@ -33,13 +35,15 @@ class Place(BaseModel, Base):
     longitude = Column(Float, nullable=True)
     amenity_ids = []
     reviews = relationship("Review", backref="place", cascade="delete")
-    amenities = relationship("Amenity", secondary="place_amenity", viewonly='plave_amenity')
+    amenities = relationship("Amenity", secondary="place_amenity", viewonly='place_amenity')
 
     if models.HBNB_TYPE_STORAGE != "db":
         @property
         def reviews(self):
             """ returns the list of Review instances with
             place_id equals to the current Place.id"""
+            from models import storage
+
             review_list = []
             review_instances = storage.all(Amenity)
             for i in review_instances.values():
@@ -49,40 +53,11 @@ class Place(BaseModel, Base):
         @property
         def amenities(self):
             """getter"""
+            from models import storage
+
             list_amenity = []
             amenity_ins = models.storage.all(Amenity)
             for i in amenity_ins.values():
                 if i.id in self.amenity_ids:
                     list_amenity.append(i)
             return list_amenity
-
-    reviews = relationship('Review', cascade="all,delete", backref="place")
-    amenities = relationship("Amenity", secondary="place_amenity", viewonly='plave_amenity')
-
-
-    if models.HBNB_TYPE_STORAGE != "db":
-        @property
-        def reviews(self):
-            """ returns the list of Review instances with
-            place_id equals to the current Place.id"""
-            review_list = []
-            review_instances = storage.all(Amenity)
-            for i in review_instances.values():
-                if i.amenity.id == self.id:
-                    review_list.append(i)
-            return review_list
-
-        @property
-        def amenities(self):
-            """getter"""
-            list_amenity = []
-            amenity_ins = models.storage.all(Amenity)
-            for i in amenity_ins.values():
-                if i.id in self.amenity_ids:
-                    list_amenity.append(i)
-            return list_amenity
-
-        @amenities.setter
-        def amenities(self, value):
-            if type(value) == Amenity:
-                self.amenity_ids.append(value.id)

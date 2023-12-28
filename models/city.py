@@ -11,6 +11,7 @@ from sqlalchemy.orm import relationship
 class City(BaseModel, Base):
     """ The city class, contains state ID and name """
     __tablename__ = 'cities'
+    id = Column(String(60), primary_key=True)
     if models.HBNB_TYPE_STORAGE == "db":
         name = Column(String(128), nullable=False)
         state_id = Column(String(60), ForeignKey("states.id"), nullable=False)
