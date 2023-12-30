@@ -6,14 +6,15 @@ Starts a Flask web application to display states and cities in alphabetical orde
 from flask import Flask, render_template
 from models import *
 from models import storage
+from models.state import State
 
 app = Flask(__name__)
 
 @app.route('/cities_by_states', strict_slashes=False)
 def cities_by_states():
     """Display a web page with a list of states and their cities in alphabetical order."""
-    states = storage.all("State").values()
-    return render_template('unique-cities_by_states.html', states=states)
+    states = storage.all(State).values()
+    return render_template('8-cities_by_states.html', states=states)
 
 @app.teardown_appcontext
 def teardown_db(exception):
